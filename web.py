@@ -12,9 +12,7 @@ def index():
     session = db.Session()
     try:
         articles = session.query(db.Article).all()
-        print articles
         return flask.render_template('index.html', articles=articles)
     finally:
         session.close()
-
 

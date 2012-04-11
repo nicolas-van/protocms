@@ -23,15 +23,25 @@ Base = sqlalchemy.ext.declarative.declarative_base(cls=Base)
 class Article(Base):
     content  = Column(String(1000))
 
-Session = sqlalchemy.orm.sessionmaker(bind=engine)
+Session = sqlalchemy.orm.scoped_session(sqlalchemy.orm.sessionmaker(bind=engine))
+
+def transactionnal(fct):
+    def wrapping(*args, **kwargs):
+        Session()
+        try:
+            val = fct(*args, **kwargs)
+            Session().commit()
+            return val
+        finally:
+            Session.remove()
+    return wrapping
 
 if not os.path.exists(filename): 
     Base.metadata.create_all(engine) 
-    session = Session()
-    try:
+    @transactionnal
+    def create_data():
         article = Article(content="dans la vallee!")
-        session.add(article)
-        session.commit()
-    finally:
-        session.close()
+        Session().add(article)
+
+    create_data()
 

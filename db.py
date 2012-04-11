@@ -9,24 +9,19 @@ filename = "database.sqlite"
 
 engine = sqlalchemy.create_engine('sqlite:///' + filename, echo=True)
 
-Base = sqlalchemy.ext.declarative.declarative_base()
+class Base(object):
+    @sqlalchemy.ext.declarative.declared_attr
+    def __tablename__(cls):
+        return cls.__name__.lower()
 
-class User(Base):
-     __tablename__ = 'users'
+    @sqlalchemy.ext.declarative.declared_attr
+    def id(cls):
+        return Column(Integer, Sequence(cls.__name__.lower() + "_id_seq"), primary_key=True)
 
-     id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
-     name = Column(String)
-     fullname = Column(String)
-     password = Column(String)
-     brole = Column(String)
+Base = sqlalchemy.ext.declarative.declarative_base(cls=Base)
 
-     def __init__(self, name, fullname, password):
-         self.name = name
-         self.fullname = fullname
-         self.password = password
-
-     def __repr__(self):
-        return "<User('%s','%s', '%s')>" % (self.name, self.fullname, self.password)
+class Article(Base):
+    content  = Column(String(1000))
 
 Session = sqlalchemy.orm.sessionmaker(bind=engine)
 
@@ -34,8 +29,9 @@ if not os.path.exists(filename):
     Base.metadata.create_all(engine) 
     session = Session()
     try:
-        user = User("fred", "vargas", "yop")
-        session.add(user)
+        article = Article(content="dans la vallee!")
+        session.add(article)
         session.commit()
     finally:
         session.close()
+

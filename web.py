@@ -11,9 +11,9 @@ def root():
 def index():
     session = db.Session()
     try:
-        users = session.query(db.User).filter(db.User.name.in_(["fred"])).all()
-        print users
-        return flask.render_template('index.html', user=users[0])
+        articles = session.query(db.Article).all()
+        print articles
+        return flask.render_template('index.html', articles=articles)
     finally:
         session.close()
 

@@ -5,8 +5,6 @@ import os.path
 app = flask.Flask(__name__)
 app.debug = True
 
-GEN_FOLDER = "dist"
-
 static_pages_fcts = []
 
 def route(*args, **kwargs):
@@ -20,15 +18,13 @@ def route(*args, **kwargs):
 
 @route("/")
 def root():
-    return blog_list(0)
+    return flask.redirect(flask.url_for("index"))
 
 @route("/index.html")
 def index():
-    articles = db.Session().query(db.Article) \
-        .filter(db.Article.type==db.ArticleType.by_key("blog_post")).all()
-    return flask.render_template('index.html', articles=articles)
+    return blog_list(0)
 
-static_pages_fcts.append(lambda: "/index.html")
+static_pages_fcts.append(lambda: ["/index.html"])
 
 PAGES_LIMIT = 5
 
@@ -46,7 +42,7 @@ def blog_list(page):
         )
 
 def gen_blog_list_urls():
-    count = db.Session.query(db.Article).filter(db.Article.type==db.ArticleType.by_key("blog_post")).count()
+    articles_count = db.Session.query(db.Article).filter(db.Article.type==db.ArticleType.by_key("blog_post")).count()
     pages_count = max(articles_count / PAGES_LIMIT + (1 if articles_count % PAGES_LIMIT > 0 else 0), 1)
     return ["/blog_list_%i.html" % i for i in range(pages_count)] 
 static_pages_fcts.append(gen_blog_list_urls)
@@ -61,6 +57,5 @@ def gen_static_files_urls():
                 files.append(os.path.join(url, f))
     find_files(app.static_folder, "/static")
     return files
-
-print gen_static_files_urls()
+static_pages_fcts.append(gen_static_files_urls)
 

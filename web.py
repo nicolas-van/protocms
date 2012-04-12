@@ -28,10 +28,12 @@ PAGES_LIMIT = 5
 def blog_list(page):
     query = db.Session.query(db.Article).filter(db.Article.type==db.ArticleType.by_key("blog_post"))
     articles_count = query.count()
-    articles = query.offset(page / PAGES_LIMIT).limit(PAGES_LIMIT).all()
-    print "articles:", articles
+    pages_count = max(articles_count / PAGES_LIMIT, 1)
+    offset = PAGES_LIMIT * page
+    articles = query.offset(offset).limit(PAGES_LIMIT).all()
     return flask.render_template('blog_list.html',
-            articles_count=articles_count,
-            articles = articles,
+            pages_count=articles_count,
+            page=page,
+            articles=articles,
         )
 

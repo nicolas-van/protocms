@@ -60,9 +60,9 @@ if not os.path.exists(filename):
             ArticleType(key="blog_post", name="Blog Post"),
             ArticleType(key="page", name="Page"),
         ])
-
-        article = Article(content="Hello World", type=ArticleType.by_key("blog_post"))
-        Session().add(article)
+        for i in range(17):
+            article = Article(content="Hello World", type=ArticleType.by_key("blog_post"))
+            Session().add(article)
 
     create_data()
 

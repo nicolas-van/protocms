@@ -1,8 +1,8 @@
 import web
 import db
 import sys
-import threading
-import httplib
+import os.path
+import os
 
 commands = {}
 
@@ -10,23 +10,39 @@ def start():
     web.app.run()
 commands["start"] = start
 
+FOLDER = "dist"
+
 def generate():
     @db.transactionnal
     def generate_urls():
         urls = []
         for fct in web.static_pages_fcts:
-            print urls
             urls = urls + fct()
         return urls
     urls = generate_urls()
 
-    def run_app():
-        web.app.run()
-    thread = threading.Thread(target=run_app)
-    thread.start()
-    conn = httplib.HTTPConnection("localhost:5000")
-    res = conn.request("GET", "/index.html")
-    print res
+    print urls
+    print "Generation of the static content"
+    for url in urls:
+        with web.app.test_request_context(url, method="GET"):
+            print "Generating", url
+            x = web.app.dispatch_request()
+            path = []
+            parent = url
+            while parent != '/':
+                tmp = os.path.split(parent)
+                path.insert(0, tmp[1])
+                parent = tmp[0]
+            path = os.path.join(*path)
+            path = os.path.join(FOLDER, path)
+            if not os.path.exists(os.path.dirname(path)):
+                os.makedirs(os.path.dirname(path))
+            with open(path, "w") as f:
+                if type(x) == str or type(x) == unicode:
+                    f.write(x)
+                else:
+                    print x
+
 commands["generate"] = generate
 
 if __name__ == "__main__":
@@ -38,3 +54,4 @@ if __name__ == "__main__":
             print k
         exit(-1)
     commands[command]()
+

@@ -8,7 +8,9 @@ from sqlalchemy.orm import relationship
 
 filename = "database.sqlite"
 
-engine = sqlalchemy.create_engine('sqlite:///' + filename, echo=True)
+DEBUG = False
+
+engine = sqlalchemy.create_engine('sqlite:///' + filename, echo=DEBUG)
 
 class Base(object):
     @sqlalchemy.ext.declarative.declared_attr

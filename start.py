@@ -41,7 +41,7 @@ def generate():
                 if type(x) == str or type(x) == unicode:
                     f.write(x)
                 else:
-                    print x
+                    f.write(x.data)
 
 commands["generate"] = generate
 

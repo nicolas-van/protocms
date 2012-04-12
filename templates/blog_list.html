@@ -1,8 +1,40 @@
 {% extends "squeletton.html" %}
 
+{% set pager_item_count = 3 %}
+{% macro blog_page(num) %}
+<a href="blog_list_{{ num }}.html">
+    {% if num == page %}
+        <strong>
+            {{ num + 1 }}
+        </strong>
+    {% else %}
+        {{ num + 1 }}
+    {% endif %}
+</a>
+{% endmacro %}
+
 {% block content %}
+    <div>
+        {% set begin = page - (pager_item_count // 2) %}
+        {% set begin =  begin if begin >= 0 else 0 %}
+        {% set end = page + (pager_item_count // 2) %}
+        {% set end =  end if end <= pages_count - 1 else pages_count - 1 %}
+        {% if begin > 0 %}
+            {{ blog_page(0) }}
+            ..
+        {% endif %}
+        {% for i in range(begin, end + 1) %}
+            {{ blog_page(i) }}
+        {% endfor %}
+        {% if end < pages_count - 1 %}
+            ..
+            {{ blog_page(pages_count - 1) }}
+        {% endif %}
+    </div>
     {% for article in articles %}
+    <div>
         {{ article.content }}
+    </div>
     {% endfor %}
 {% endblock %}
 

@@ -14,7 +14,7 @@ def route(*args, **kwargs):
 
 @route("/")
 def root():
-    return blog_list(1)
+    return blog_list(0)
 
 @route("/index.html")
 def index():
@@ -28,11 +28,11 @@ PAGES_LIMIT = 5
 def blog_list(page):
     query = db.Session.query(db.Article).filter(db.Article.type==db.ArticleType.by_key("blog_post"))
     articles_count = query.count()
-    pages_count = max(articles_count / PAGES_LIMIT, 1)
+    pages_count = max(articles_count / PAGES_LIMIT + (1 if articles_count % PAGES_LIMIT > 0 else 0), 1)
     offset = PAGES_LIMIT * page
     articles = query.offset(offset).limit(PAGES_LIMIT).all()
     return flask.render_template('blog_list.html',
-            pages_count=articles_count,
+            pages_count=pages_count,
             page=page,
             articles=articles,
         )

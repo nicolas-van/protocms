@@ -14,6 +14,7 @@ def root():
 
 @route("/index.html")
 def index():
-    articles = db.Session().query(db.Article).all()
+    articles = db.Session().query(db.Article) \
+        .filter(db.Article.type==db.ArticleType.by_key("blog_post")).all()
     return flask.render_template('index.html', articles=articles)
 

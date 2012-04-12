@@ -4,6 +4,7 @@ import os.path
 import sqlalchemy.orm
 import sqlalchemy.ext.declarative 
 from sqlalchemy import Column, Integer, String, Sequence
+from sqlalchemy.orm import relationship
 
 filename = "database.sqlite"
 
@@ -20,8 +21,23 @@ class Base(object):
 
 Base = sqlalchemy.ext.declarative.declarative_base(cls=Base)
 
+def Many2One(class_name):
+    return Column(Integer, sqlalchemy.ForeignKey(class_name.lower() + ".id"))
+
+class ArticleType(Base):
+    key = Column(String(30))
+    name = Column(String(50))
+
+    @staticmethod
+    def by_key(key):
+        return Session().query(ArticleType).filter(ArticleType.key == key).one()
+
 class Article(Base):
     content  = Column(String(1000))
+    type_id = Many2One("ArticleType")
+
+    type = relationship("ArticleType")
+    
 
 Session = sqlalchemy.orm.scoped_session(sqlalchemy.orm.sessionmaker(bind=engine))
 
@@ -40,7 +56,11 @@ if not os.path.exists(filename):
     Base.metadata.create_all(engine) 
     @transactionnal
     def create_data():
-        article = Article(content="dans la vallee!")
+        Session().add_all([
+            ArticleType(key="blog_post", name="Blog Post"),
+            ArticleType(key="page", name="Page"),
+        ])
+        article = Article(content="Hello World", type=ArticleType.by_key("blog_post"))
         Session().add(article)
 
     create_data()

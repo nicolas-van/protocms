@@ -1,0 +1,8 @@
+{% extends "squeletton.html" %}
+
+{% block content %}
+    {% for article in articles %}
+        {{ article.content }}
+    {% endfor %}
+{% endblock %}
+

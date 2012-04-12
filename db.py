@@ -21,11 +21,11 @@ class Base(object):
 
 Base = sqlalchemy.ext.declarative.declarative_base(cls=Base)
 
-def Many2One(class_name):
-    return Column(Integer, sqlalchemy.ForeignKey(class_name.lower() + ".id"))
+def Many2One(class_name, **kwargs):
+    return Column(Integer, sqlalchemy.ForeignKey(class_name.lower() + ".id"), **kwargs)
 
 class ArticleType(Base):
-    key = Column(String(30), index=True, unique=True)
+    key = Column(String(30), index=True, unique=True, nullable=False)
     name = Column(String(50))
 
     @staticmethod
@@ -34,7 +34,7 @@ class ArticleType(Base):
 
 class Article(Base):
     content  = Column(String(1000))
-    type_id = Many2One("ArticleType")
+    type_id = Many2One("ArticleType", nullable=False)
 
     type = relationship("ArticleType")
     

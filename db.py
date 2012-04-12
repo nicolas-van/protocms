@@ -25,7 +25,7 @@ def Many2One(class_name):
     return Column(Integer, sqlalchemy.ForeignKey(class_name.lower() + ".id"))
 
 class ArticleType(Base):
-    key = Column(String(30))
+    key = Column(String(30), index=True, unique=True)
     name = Column(String(50))
 
     @staticmethod
@@ -60,6 +60,7 @@ if not os.path.exists(filename):
             ArticleType(key="blog_post", name="Blog Post"),
             ArticleType(key="page", name="Page"),
         ])
+
         article = Article(content="Hello World", type=ArticleType.by_key("blog_post"))
         Session().add(article)
 

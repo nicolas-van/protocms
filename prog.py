@@ -6,6 +6,9 @@ import os
 
 commands = {}
 
+web.app.template_folder = os.path.abspath("templates")
+web.app.static_folder = os.path.abspath("static")
+
 def start():
     web.app.run()
 commands["start"] = start

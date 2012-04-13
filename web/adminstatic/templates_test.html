@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
+<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+<script type="text/javascript" src="jquery-1.7.2.js"></script>
+<script type="text/javascript" src="underscore.js"></script>
+<script type="text/javascript" src="underscore.string.js"></script>
+<script type="text/javascript" src="templates.js"></script>
+
+<script type="text" id="test_template">
+{# template yop #}
+    Hello
+{# endtemplate #}
+{# template test #}
+    {{ test_var }}
+{# endtemplate #}
+{# template test2 #}
+    {% _.each(lst, function(el) { %}
+        {{ el }}
+    {% }); %}
+{# endtemplate #}
+</script>
+
+  <script>
+  $(document).ready(function(){
+    
+test("loading", function() {
+    var e = new TemplateEngine();
+    e._parse_file($("#test_template").html());
+    var r = e.yop();
+    equal(r.trim(), "Hello");
+    r = e.test({test_var: "azerty"});
+    equal(r.trim(), "azerty");
+    r = e.test2({lst: [1, 2, 3]});
+    r = _.filter(_.map(r.split("\n"), function(el) { return el.trim(); }), function(el) { return el; }).join(" ");
+    equal(r, "1 2 3"); 
+});
+
+module("TemplateEngine");
+
+  });
+  </script>
+  
+</head>
+<body>
+  <h1 id="qunit-header">QUnit example</h1>
+ <h2 id="qunit-banner"></h2>
+ <div id="qunit-testrunner-toolbar"></div>
+ <h2 id="qunit-userAgent"></h2>
+ <ol id="qunit-tests"></ol>
+ <div id="qunit-fixture">test markup, will be hidden</div>
+</body>
+</html>

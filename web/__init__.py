@@ -1,5 +1,5 @@
 
-__all__ = ["common",]
+__all__ = ["common", "admin"]
 
 import db
 import flask

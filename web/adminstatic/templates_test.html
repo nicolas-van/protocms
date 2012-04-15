@@ -15,12 +15,12 @@
     Hello
 {# endtemplate #}
 {# template test #}
-    {{ test_var }}
+    ${test_var}
 {# endtemplate #}
 {# template test2 #}
-    {% _.each(lst, function(el) { %}
-        {{ el }}
-    {% }); %}
+    <% _.each(lst, function(el) { %>
+        ${el}
+    <% }); %>
 {# endtemplate #}
 </script>
 

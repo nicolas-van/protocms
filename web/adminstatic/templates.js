@@ -15,7 +15,7 @@ _.extend(TemplateEngine.prototype, {
         });
     },
     _parse_file: function(file_content) {
-        var reg = /\{\#\s*template\s+(\w+)\s*\#\}((?:.*\n)*?)\{\#\s*endtemplate\s*\#\}/g;
+        var reg = /\{\#\s*template\s+(\w+)\s*\#\}([\s\S]*?)\{\#\s*endtemplate\s*\#\}/g;
         var to_add = {};
         var search;
         while (search = reg.exec(file_content)) {
@@ -47,9 +47,9 @@ _.extend(TemplateEngine.prototype, {
 // By default, Underscore uses ERB-style template delimiters, change the
 // following template settings to use alternative delimiters.
 templateSettings = {
-    interpolate : /\{\{\-(.+?)\}\}/g,
-    escape: /\{\{(.+?)\}\}/g,
-    evaluate: /\{\%(.+?)\%\}/g,
+    interpolate : /\$\{\-(.+?)\}/g,
+    escape: /\$\{(.+?)\}/g,
+    evaluate: /(?:<%([\s\S]+?)%>)|(?:[^\\]%(.+?)\n)/g,
 };
 
 // When customizing `templateSettings`, if you don't want to define an
@@ -100,7 +100,8 @@ template = function(text, data, settings) {
       .replace(settings.interpolate || noMatch, function(match, code) {
         return "'+\n(" + unescape(code) + ")+\n'";
       })
-      .replace(settings.evaluate || noMatch, function(match, code) {
+      .replace(settings.evaluate || noMatch, function(match, code1, code2) {
+        var code = code1 || code2;
         return "';\n" + unescape(code) + "\n;__p+='";
       }) + "';\n";
 

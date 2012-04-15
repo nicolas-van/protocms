@@ -15,7 +15,7 @@ _.extend(TemplateEngine.prototype, {
         });
     },
     _parse_file: function(file_content) {
-        var reg = /\{\#\s*template\s+(\w+)\s*\#\}([\s\S]*?)\{\#\s*endtemplate\s*\#\}/g;
+        var reg = /<\#\s*template\s+(\w+)\s*\#>([\s\S]*?)<\#\s*endtemplate\s*\#>/g;
         var to_add = {};
         var search;
         while (search = reg.exec(file_content)) {
@@ -47,9 +47,9 @@ _.extend(TemplateEngine.prototype, {
 // By default, Underscore uses ERB-style template delimiters, change the
 // following template settings to use alternative delimiters.
 templateSettings = {
-    interpolate : /((?:\\\\)*)(\$\{\-(.+?)\})/g,
-    escape: /((?:\\\\)*)(\$\{(.+?)\})/g,
-    evaluate: /((?:\\\\)*)(<%([\s\S]+?)%>|%(.+?)\\n)/g,
+    interpolate : /((?:\\\\)*)(\$\{%(.+?)\})/g,
+    escape: /((?:\\\\)*)(\$\{([^%].*?)\})/g,
+    evaluate: /((?:\\\\)*)(<%([\s\S]+?)%>|%(.+?)(?:\\n|$))/g,
 };
 
 // When customizing `templateSettings`, if you don't want to define an

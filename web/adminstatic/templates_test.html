@@ -11,31 +11,36 @@
 <script type="text/javascript" src="templates.js"></script>
 
 <script type="text" id="test_template">
-{# template yop #}
+<# template yop #>
     Hello
-{# endtemplate #}
-{# template test #}
+<# endtemplate #>
+<# template test #>
     ${test_var}
-{# endtemplate #}
-{# template test2 #}
+<# endtemplate #>
+<# template test2 #>
     <% _.each(lst, function(el) { %>
         ${el}
     <% }
     ); %>
-{# endtemplate #}
-{# template test3 #}
+<# endtemplate #>
+<# template test3 #>
     % _.each(lst, function(el) { 
         ${el}
     % }); 
-{# endtemplate #}
-{# template testfct #}
+<# endtemplate #>
+<# template testfct #>
     % var yop = function(arg) {
         ${arg}
     % }; 
     <% yop("abc"); %>
     % yop("def");
-{# endtemplate #}
-
+<# endtemplate #>
+<# template testmacro #>
+    lalala
+<# endtemplate #>
+<# template testcallmacro #>
+    ${%engine.testmacro()}
+<# endtemplate #>
 </script>
 
   <script>
@@ -61,8 +66,11 @@ test("loading", function() {
     r = e.testfct();
     equal(transform(r), "abc def");
 
-    var tmpl = e.build_template(" \\\\\\% lalala\n");
-    equal(tmpl(), " \\% lalala\n");
+    var tmpl = e.build_template(" \\\\\\% lalala");
+    equal(tmpl(), " \\% lalala");
+
+    r = e.testcallmacro();
+    equal(transform(r), "lalala");
 });
 
 module("TemplateEngine");

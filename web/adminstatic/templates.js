@@ -21,10 +21,10 @@ _.extend(TemplateEngine.prototype, {
         while (search = reg.exec(file_content)) {
             if (this[search[1]])
                 throw new Error(search[1] + " is an already defined template");
-            this[search[1]] = this._build_template(search[2]);
+            this[search[1]] = this.build_template(search[2]);
         }
     },
-    _build_template: function(template_) {
+    build_template: function(template_) {
         var self = this;
         var result = template(template_);
         return function(data) {
@@ -47,9 +47,9 @@ _.extend(TemplateEngine.prototype, {
 // By default, Underscore uses ERB-style template delimiters, change the
 // following template settings to use alternative delimiters.
 templateSettings = {
-    interpolate : /\$\{\-(.+?)\}/g,
-    escape: /\$\{(.+?)\}/g,
-    evaluate: /(?:<%([\s\S]+?)%>)|(?:%(.+?)\\n)/g,
+    interpolate : /((?:\\\\)*)(\$\{\-(.+?)\})/g,
+    escape: /((?:\\\\)*)(\$\{(.+?)\})/g,
+    evaluate: /((?:\\\\)*)(<%([\s\S]+?)%>|%(.+?)\\n)/g,
 };
 
 // When customizing `templateSettings`, if you don't want to define an
@@ -81,6 +81,18 @@ var unescape = function(code) {
     });
 };
 
+var slashsec = function(function_) {
+    return function(match, slashes, content, code1, code2) {
+        slashes = slashes || "";
+        var nbr = slashes.length / 2;
+        var nslash = slashes.slice(0, nbr - (nbr % 2));
+        if (slashes.length % 4 === 0)
+            return nslash + function_(match, code1, code2);
+        else
+            return nslash + (content);
+    };
+};
+
 // JavaScript micro-templating, similar to John Resig's implementation.
 // Underscore templating handles arbitrary delimiters, preserves whitespace,
 // and correctly escapes quotes within interpolated code.
@@ -94,16 +106,16 @@ template = function(text, data, settings) {
       .replace(escaper, function(match) {
         return '\\' + escapes[match];
       })
-      .replace(settings.escape || noMatch, function(match, code) {
+      .replace(settings.escape || noMatch, slashsec(function(match, code) {
         return "'+\n_.escape(" + unescape(code) + ")+\n'";
-      })
-      .replace(settings.interpolate || noMatch, function(match, code) {
+      }))
+      .replace(settings.interpolate || noMatch, slashsec(function(match, code) {
         return "'+\n(" + unescape(code) + ")+\n'";
-      })
-      .replace(settings.evaluate || noMatch, function(match, code1, code2) {
+      }))
+      .replace(settings.evaluate || noMatch, slashsec(function(match, code1, code2) {
         var code = code1 || code2;
         return "';\n" + unescape(code) + "\n;__p+='";
-      }) + "';\n";
+      })) + "';\n";
 
     // If a variable is not specified, place data values in local scope.
     if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';

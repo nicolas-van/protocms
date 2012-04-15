@@ -1,14 +1,10 @@
 
+(function() {
 var TemplateEngine = function() {
     this.init();
 }
 
 _.extend(TemplateEngine.prototype, {
-    _template_setting: {
-        interpolate : /\{\{\-(.+?)\}\}/g,
-        escape: /\{\{(.+?)\}\}/g,
-        evaluate: /\{\%(.+?)\%\}/g,
-    },
     init: function() {
         this.set_environment({});
     },
@@ -28,9 +24,9 @@ _.extend(TemplateEngine.prototype, {
             this[search[1]] = this._build_template(search[2]);
         }
     },
-    _build_template: function(template) {
+    _build_template: function(template_) {
         var self = this;
-        var result = _.template(template, undefined, this._template_setting);
+        var result = template(template_);
         return function(data) {
             return result(_.extend({engine: self}, self._env, data));
         };
@@ -39,4 +35,99 @@ _.extend(TemplateEngine.prototype, {
         this._env = env;
     },
 });
+
+//     Underscore.js 1.3.3
+//     (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
+//     Underscore is freely distributable under the MIT license.
+//     Portions of Underscore are inspired or borrowed from Prototype,
+//     Oliver Steele's Functional, and John Resig's Micro-Templating.
+//     For all details and documentation:
+//     http://documentcloud.github.com/underscore
+
+// By default, Underscore uses ERB-style template delimiters, change the
+// following template settings to use alternative delimiters.
+templateSettings = {
+    interpolate : /\{\{\-(.+?)\}\}/g,
+    escape: /\{\{(.+?)\}\}/g,
+    evaluate: /\{\%(.+?)\%\}/g,
+};
+
+// When customizing `templateSettings`, if you don't want to define an
+// interpolation, evaluation or escaping regex, we need one that is
+// guaranteed not to match.
+var noMatch = /.^/;
+
+// Certain characters need to be escaped so that they can be put into a
+// string literal.
+var escapes = {
+    '\\': '\\',
+    "'": "'",
+    'r': '\r',
+    'n': '\n',
+    't': '\t',
+    'u2028': '\u2028',
+    'u2029': '\u2029'
+};
+
+for (var p in escapes) escapes[escapes[p]] = p;
+var escaper = /\\|'|\r|\n|\t|\u2028|\u2029/g;
+var unescaper = /\\(\\|'|r|n|t|u2028|u2029)/g;
+
+// Within an interpolation, evaluation, or escaping, remove HTML escaping
+// that had been previously added.
+var unescape = function(code) {
+    return code.replace(unescaper, function(match, escape) {
+        return escapes[escape];
+    });
+};
+
+// JavaScript micro-templating, similar to John Resig's implementation.
+// Underscore templating handles arbitrary delimiters, preserves whitespace,
+// and correctly escapes quotes within interpolated code.
+template = function(text, data, settings) {
+    settings = _.defaults(settings || {}, templateSettings);
+
+    // Compile the template source, taking care to escape characters that
+    // cannot be included in a string literal and then unescape them in code
+    // blocks.
+    var source = "__p+='" + text
+      .replace(escaper, function(match) {
+        return '\\' + escapes[match];
+      })
+      .replace(settings.escape || noMatch, function(match, code) {
+        return "'+\n_.escape(" + unescape(code) + ")+\n'";
+      })
+      .replace(settings.interpolate || noMatch, function(match, code) {
+        return "'+\n(" + unescape(code) + ")+\n'";
+      })
+      .replace(settings.evaluate || noMatch, function(match, code) {
+        return "';\n" + unescape(code) + "\n;__p+='";
+      }) + "';\n";
+
+    // If a variable is not specified, place data values in local scope.
+    if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+
+    source = "var __p='';" +
+      "var print=function(){__p+=Array.prototype.join.call(arguments, '')};\n" +
+      source + "return __p;\n";
+
+    var render = new Function(settings.variable || 'obj', '_', source);
+    if (data) return render(data, _);
+    var template = function(data) {
+      return render.call(this, data, _);
+    };
+
+    // Provide the compiled function source as a convenience for build time
+    // precompilation.
+    template.source = 'function(' + (settings.variable || 'obj') + '){\n' +
+      source + '}';
+
+    return template;
+};
+
+// end of Jeremy Ashkenas' code
+
+this.TemplateEngine = TemplateEngine;
+
+})();
 

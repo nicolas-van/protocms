@@ -49,7 +49,7 @@ _.extend(TemplateEngine.prototype, {
 templateSettings = {
     interpolate : /\$\{\-(.+?)\}/g,
     escape: /\$\{(.+?)\}/g,
-    evaluate: /(?:<%([\s\S]+?)%>)|(?:[^\\]%(.+?)\n)/g,
+    evaluate: /(?:<%([\s\S]+?)%>)|(?:%(.+?)\\n)/g,
 };
 
 // When customizing `templateSettings`, if you don't want to define an

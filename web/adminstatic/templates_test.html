@@ -49,7 +49,7 @@
 test("loading", function() {
     var e = new TemplateEngine();
 
-    e._parse_file($("#test_template").html());
+    e._parseFile($("#test_template").html());
     var r = e.yop();
     equal(r.trim(), "Hello");
     r = e.test({test_var: "azerty"});
@@ -66,7 +66,7 @@ test("loading", function() {
     r = e.testfct();
     equal(transform(r), "abc def");
 
-    var tmpl = e.build_template(" \\\\\\% lalala");
+    var tmpl = e.buildTemplate(" \\\\\\% lalala");
     equal(tmpl(), " \\% lalala");
 
     r = e.testcallmacro();

@@ -12,14 +12,21 @@
     <script type="text/javascript" src="underscore.js"></script>
     <script type="text/javascript" src="underscore.string.js"></script>
     <script type="text/javascript" src="templates.js"></script>
+    <script type="text/javascript" src="nova.js"></script>
     <script type="text/javascript" src="admin.js"></script>
 
 
     <title>Admin</title>
+    <script>
+        $(document).ready(function() {
+            admin.loaded.then(function() {
+                new admin.Admin().appendTo($("body"));
+            });
+        });
+    </script>
 </head>
 
 <body>
-    <div>Hello</div>
 </body>
 </html>
 

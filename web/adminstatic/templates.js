@@ -6,32 +6,32 @@ var TemplateEngine = function() {
 
 _.extend(TemplateEngine.prototype, {
     init: function() {
-        this.set_environment({});
+        this.setEnvironment({});
     },
-    load_file: function(filename) {
+    loadFile: function(filename) {
         var self = this;
         return $.get(filename).pipe(function(content) {
-            return self._parse_file(content);
+            return self._parseFile(content);
         });
     },
-    _parse_file: function(file_content) {
+    _parseFile: function(file_content) {
         var reg = /<\#\s*template\s+(\w+)\s*\#>([\s\S]*?)<\#\s*endtemplate\s*\#>/g;
         var to_add = {};
         var search;
         while (search = reg.exec(file_content)) {
             if (this[search[1]])
                 throw new Error(search[1] + " is an already defined template");
-            this[search[1]] = this.build_template(search[2]);
+            this[search[1]] = this.buildTemplate(search[2]);
         }
     },
-    build_template: function(template_) {
+    buildTemplate: function(template_) {
         var self = this;
         var result = template(template_);
         return function(data) {
             return result(_.extend({engine: self}, self._env, data));
         };
     },
-    set_environment: function(env) {
+    setEnvironment: function(env) {
         this._env = env;
     },
 });

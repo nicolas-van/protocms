@@ -90,8 +90,9 @@ admin.Menu = admin.Widget.extend({
 admin.Articles = admin.Widget.extend({
     template: admin.templateEngine.articles,
     start: function() {
-        admin.session.call("query_articles", [80]).then(function(result) {
-            debugger;
+        var self = this;
+        admin.session.call("search_count", ['article'], {order_by: 'name'}).then(function(result) {
+            self.$element.html(admin.templateEngine.article_list({rows: result.list}));
         });
     },
 });

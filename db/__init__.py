@@ -42,13 +42,14 @@ class ThreadSession:
 
 class ArticleType(Base):
     key = Column(String(30), index=True, unique=True, nullable=False)
-    name = Column(String(50))
+    name = Column(String(50), nullable=False)
 
     @staticmethod
     def by_key(key):
         return session.query(ArticleType).filter(ArticleType.key == key).one()
 
 class Article(Base):
+    name = Column(String(50))
     content  = Column(String(1000), default="Yop")
     type_id = Many2One("ArticleType", nullable=False)
 
@@ -86,7 +87,7 @@ if not os.path.exists(filename):
             ArticleType(key="page", name="Page"),
         ])
         for i in range(17):
-            article = Article(type=ArticleType.by_key("blog_post"))
+            article = Article(name="Something", content="Hello world!", type=ArticleType.by_key("blog_post"))
             session.add(article)
 
     create_data()

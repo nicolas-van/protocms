@@ -17,17 +17,32 @@
     </div>
 </div>
 </# template #>
+
 <# template menu #>
 <ul>
-% var i = 0;
-% _.each(widget.elements, function(el) {
+    % var i = 0;
+    % _.each(widget.elements, function(el) {
     <li><a href="javascript:void(0)" data-index="${i}">${el.string}</a></li>
     % i++;
-% });
+    % });
 </ul>
 </# template #>
+
 <# template articles #>
 <div>
-    yopla
 </div>
 </# template #>
+
+<# template article_list #>
+<table>
+    <tr>
+        <th>Name</th>
+    </tr>
+    % _.each(rows, function(row) {
+    <tr>
+        <td>${row.name}</td>
+    </tr>
+    % });
+</table>
+</# template #>
+

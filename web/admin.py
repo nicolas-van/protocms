@@ -5,6 +5,7 @@ import os
 import os.path
 from flask import json
 import logging
+from sqlalchemy import sql
 
 _logger = logging.getLogger(__name__)
 
@@ -48,12 +49,24 @@ def admin_static(file_):
     return flask.send_file(path)
 
 @rpc
-def query_articles(limit):
-    q = db.session.query(db.Article)
-    count = q.count()
-    result = db.session.execute(q.limit(limit))
-    import pprint
-    pprint.pprint(result)
+def search_count(table_name, columns=None, offset=None, limit=None, order_by=None):
+    table = db.Base.metadata.tables[table_name]
+    to_select = None
+    if columns is None:
+        to_select = [table]
+    else:
+        to_select = [table.columns[x] for x in columns]
+    q = sql.select(to_select)
+    count = db.session.execute(q.count()).fetchone()[0]
+    
+    if offset is not None:
+        q = q.offset(offset)
+    if limit is not None:
+        q = q.limit(limit)
+    if order_by is not None:
+        col = table.columns[order_by]
+        q = q.order_by(col)
+    result = db.session.execute(q)
     return {
         "count": count,
         "list": [dict(x) for x in result],

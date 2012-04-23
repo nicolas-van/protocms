@@ -28,7 +28,7 @@ def route(*args, **kwargs):
         tmp.setdefault("endpoint", fct.__name__)
         tmp["view_func"] = db.transactionnal(fct)
         app.add_url_rule(*args, **tmp)
-        return tmp["view_func"]
+        return fct
     return wrapper
 
 

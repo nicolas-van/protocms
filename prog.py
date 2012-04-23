@@ -3,6 +3,7 @@ import db
 import sys
 import os.path
 import os
+import logging
 
 commands = {}
 
@@ -49,6 +50,7 @@ def generate():
 commands["generate"] = generate
 
 if __name__ == "__main__":
+    logging.basicConfig()
     command = sys.argv[1] if len(sys.argv) >= 2 else ""
     if not command in commands:
         print "Invalid command, use one of these commands:"

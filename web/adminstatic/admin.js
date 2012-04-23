@@ -43,11 +43,13 @@ admin.jsonRpc = function(url, fct_name, params, settings) {
 
 admin.Session = nova.Class.extend({
     call: function(fct_name, args, kwargs) {
-        return admin.jsonRpc("../adminapi", fct_name, {args: args || [], kwargs: kwargs || {}});
+        return admin.jsonRpc("../adminapi", fct_name, {args: args || [], kwargs: kwargs || {}}).fail(function() {
+            console.error("Error during json-rpc communication", _.toArray(arguments));
+        });
     },
 });
 
-admin.session = admin.Session();
+admin.session = new admin.Session();
 
 admin.Admin = admin.Widget.extend({
     template: admin.templateEngine.admin,
@@ -87,6 +89,11 @@ admin.Menu = admin.Widget.extend({
 
 admin.Articles = admin.Widget.extend({
     template: admin.templateEngine.articles,
+    start: function() {
+        admin.session.call("query_articles", [80]).then(function(result) {
+            debugger;
+        });
+    },
 });
 admin.menuElements.push({string: "Articles", importance: 1, class_: admin.Articles});
 

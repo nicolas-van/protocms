@@ -34,7 +34,7 @@ class ThreadSession:
     def __getattr__(self, name):
         return getattr(self._session_class(), name)
     def ensure_inited(self):
-        self._session_class()
+        return self._session_class()
     def remove(self):
         return self._session_class.remove()
 
@@ -49,7 +49,7 @@ class ArticleType(Base):
         return session.query(ArticleType).filter(ArticleType.key == key).one()
 
 class Article(Base):
-    content  = Column(String(1000))
+    content  = Column(String(1000), default="Yop")
     type_id = Many2One("ArticleType", nullable=False)
 
     type = relationship("ArticleType")
@@ -86,7 +86,7 @@ if not os.path.exists(filename):
             ArticleType(key="page", name="Page"),
         ])
         for i in range(17):
-            article = Article(content="Hello World", type=ArticleType.by_key("blog_post"))
+            article = Article(type=ArticleType.by_key("blog_post"))
             session.add(article)
 
     create_data()

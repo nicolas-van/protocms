@@ -13,34 +13,34 @@
 <script type="text" id="test_template">
 <# template yop #>
     Hello
-<# endtemplate #>
+</# template #>
 <# template test #>
     ${test_var}
-<# endtemplate #>
+</# template #>
 <# template test2 #>
     <% _.each(lst, function(el) { %>
         ${el}
     <% }
     ); %>
-<# endtemplate #>
+</# template #>
 <# template test3 #>
     % _.each(lst, function(el) { 
         ${el}
     % }); 
-<# endtemplate #>
+</# template #>
 <# template testfct #>
     % var yop = function(arg) {
         ${arg}
     % }; 
     <% yop("abc"); %>
     % yop("def");
-<# endtemplate #>
+</# template #>
 <# template testmacro #>
     lalala
-<# endtemplate #>
+</# template #>
 <# template testcallmacro #>
-    ${%engine.testmacro()}
-<# endtemplate #>
+    %{engine.testmacro()}
+</# template #>
 </script>
 
   <script>

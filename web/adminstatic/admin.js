@@ -9,15 +9,11 @@ admin.Widget = nova.Widget.extend({
         return "<div></div>";
     },
     renderElement: function() {
-        var html = this.template();
+        var html = this.template({widget: this});
         var $elem = $(html);
         $elem.replaceAll(this.$element);
         this.$element = $elem;
     },
-});
-
-admin.Admin = admin.Widget.extend({
-    template: admin.templateEngine.admin,
 });
 
 admin.jsonRpc = function(url, fct_name, params, settings) {
@@ -51,12 +47,49 @@ admin.Session = nova.Class.extend({
     },
 });
 
-var ses = new admin.Session();
-ses.call("hello").then(function() {
-    console.log("everything is fine", _.toArray(arguments));
-}, function() {
-    console.log("everything goes bad", _.toArray(arguments));
+admin.session = admin.Session();
+
+admin.Admin = admin.Widget.extend({
+    template: admin.templateEngine.admin,
+    start: function() {
+        this.menu = new admin.Menu(this);
+        this.menu.$displayTo = $(".content", this.$element);
+        this.menu.appendTo($(".navigation", this.$element));
+    },
 });
+
+admin.menuElements = [];
+
+admin.Menu = admin.Widget.extend({
+    template: admin.templateEngine.menu,
+    renderElement: function() {
+        this.elements = _.sortBy(admin.menuElements, function(el) {
+            return el.importance;
+        });
+        this._super();
+    },
+    start: function() {
+        var self = this;
+        $("a", this.$element).click(function(ev) {
+            var index = Number($(ev.target).attr("data-index"));
+            self.display(index);
+        });
+        this.display(0);
+    },
+    display: function(index) {
+        var elem = this.elements[index].class_;
+        if (this.current)
+            this.current.destroy();
+        this.current = new (elem)(this.getParent());
+        this.current.appendTo(this.$displayTo);
+    },
+});
+
+admin.Articles = admin.Widget.extend({
+    template: admin.templateEngine.articles,
+});
+admin.menuElements.push({string: "Articles", importance: 1, class_: admin.Articles});
+
 
 });
 })();

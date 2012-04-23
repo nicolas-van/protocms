@@ -8,15 +8,26 @@
     </div>
     <div class="grid_2">
         <div class="navigation">
-            Menu
+            
         </div>
     </div>
     <div class="grid_10">
         <div class="content">
-            Content
         </div>
     </div>
 </div>
 </# template #>
-
-
+<# template menu #>
+<ul>
+% var i = 0;
+% _.each(widget.elements, function(el) {
+    <li><a href="javascript:void(0)" data-index="${i}">${el.string}</a></li>
+    % i++;
+% });
+</ul>
+</# template #>
+<# template articles #>
+<div>
+    yopla
+</div>
+</# template #>

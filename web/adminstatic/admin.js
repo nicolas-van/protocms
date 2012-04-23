@@ -20,7 +20,7 @@ admin.Admin = admin.Widget.extend({
     template: admin.templateEngine.admin,
 });
 
-var json_rpc = function(url, fct_name, params, settings) {
+admin.jsonRpc = function(url, fct_name, params, settings) {
     var data = {
         jsonrpc: "2.0",
         method: fct_name,
@@ -47,7 +47,7 @@ var json_rpc = function(url, fct_name, params, settings) {
 
 admin.Session = nova.Class.extend({
     call: function(fct_name, args, kwargs) {
-        return json_rpc("../adminapi", fct_name, {args: args || [], kwargs: kwargs || {}});
+        return admin.jsonRpc("../adminapi", fct_name, {args: args || [], kwargs: kwargs || {}});
     },
 });
 

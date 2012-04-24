@@ -1,12 +1,30 @@
 
-.admin-panel {
-    color: #729FCF;
-}
+@base-text: #729FCF;
 
-.content, .navigation, .header {
-    border: 1px solid #729FCF;
-    padding: 5px;
-    margin: 5px -5px;
+.admin-panel {
+    color: @base-text;
+
+    a {
+        color: @base-text;
+    }
+
+    .big-blue-box {
+        border: 1px solid @base-text;
+        padding: 5px;
+        margin: 5px -5px;
+    }
+
+    .content, .navigation, .header {
+        .big-blue-box
+    }
+    .navigation ul {
+        margin: 0;
+    }
+    .navigation li {
+        margin: 0;
+        display: block;
+    }
+
 }
 
 

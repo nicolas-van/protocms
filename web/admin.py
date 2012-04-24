@@ -37,8 +37,11 @@ def admin_api():
         return flask.jsonify(**{
             "jsonrpc": "2.0",
             "error": {
-                "traceback": traceback.format_exc(),
-                "message": unicode(e)
+                "code": -32000,
+                "message": unicode(e),
+                "data": {
+                    "traceback": traceback.format_exc(),
+                },
             },
             "id": data["id"],
         })

@@ -1,7 +1,5 @@
 
-__all__ = ["common", "admin"]
-
-import db
+import orpheus.db as db
 import flask
 import os
 import os.path
@@ -32,4 +30,3 @@ def route(*args, **kwargs):
     return wrapper
 
 
-from web import *

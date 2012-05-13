@@ -1,5 +1,5 @@
-import web
-import db
+import orpheus.web as web
+import orpheus.db as db
 import sys
 import os.path
 import os

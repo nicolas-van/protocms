@@ -1,6 +1,6 @@
-import web
+import core as web
 import flask
-import db
+import orpheus.db as db
 
 @web.route("/")
 def root():

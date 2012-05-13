@@ -28,7 +28,7 @@ def blog_list(page):
         )
 
 def gen_blog_list_urls():
-    articles_count = db.session.query(db.Article).filter(db.Article.type==db.ArticleType.by_key("blog_post")).count()
+    articles_count = db.session.query(db.Article).filter(db.Article.published==True).count()
     pages_count = max(articles_count / PAGES_LIMIT + (1 if articles_count % PAGES_LIMIT > 0 else 0), 1)
     return ["/blog_list_%i.html" % i for i in range(pages_count)] 
 web.static_pages_fcts.append(gen_blog_list_urls)

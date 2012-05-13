@@ -3,15 +3,13 @@ import sqlalchemy
 import os.path
 import sqlalchemy.orm
 import sqlalchemy.ext.declarative 
-from sqlalchemy import Column, Integer, String, Sequence
+from sqlalchemy import Column, Integer, String, Sequence, Boolean
 from sqlalchemy.orm import relationship
 import threading
 
-filename = "database.sqlite"
-
 DEBUG = False
 
-engine = sqlalchemy.create_engine('sqlite:///' + filename, echo=DEBUG)
+engine = sqlalchemy.create_engine('sqlite:///database.sqlite', echo=DEBUG)
 
 # Some helpers to help use SqlAlchemy
 class Base(object):
@@ -40,20 +38,11 @@ class ThreadSession:
 
 # models
 
-class ArticleType(Base):
-    key = Column(String(30), index=True, unique=True, nullable=False)
-    name = Column(String(50), nullable=False)
-
-    @staticmethod
-    def by_key(key):
-        return session.query(ArticleType).filter(ArticleType.key == key).one()
-
 class Article(Base):
-    name = Column(String(50))
-    content  = Column(String(1000), default="Yop")
-    type_id = Many2One("ArticleType", nullable=False)
+    name = Column(String(50), nullable=False)
+    content  = Column(String(1000), default="Yop", nullable=False)
+    published = Column(Boolean(), default=False, nullable=False)
 
-    type = relationship("ArticleType")
 
 # session
 
@@ -78,17 +67,20 @@ def transactionnal(fct):
 
 # database initialisation
 
-if not os.path.exists(filename): 
-    Base.metadata.create_all(engine) 
-    @transactionnal
-    def create_data():
-        session.add_all([
-            ArticleType(key="blog_post", name="Blog Post"),
-            ArticleType(key="page", name="Page"),
-        ])
-        for i in range(17):
-            article = Article(name="Something", content="Hello world!", type=ArticleType.by_key("blog_post"))
-            session.add(article)
+def init_db():
+    if len(Base.metadata.tables.keys()) == 0:
+        return
+    tname = Base.metadata.tables.keys()[0]
+    if not engine.dialect.has_table(engine, tname):
+        Base.metadata.create_all(engine) 
+        @transactionnal
+        def create_data():
+            for i in range(17):
+                article = Article(name="Something %d" % i, content="Hello world %d!" % i, published=True)
+                session.add(article)
 
-    create_data()
+        create_data()
+
+def drop_db():
+    Base.metadata.drop_all(engine)
 

@@ -11,12 +11,14 @@ web.app.template_folder = os.path.abspath("templates")
 web.app.static_folder = os.path.abspath("static")
 
 def start():
+    db.init_db()
     web.app.run()
 commands["start"] = start
 
 FOLDER = "dist"
 
 def generate():
+    db.init_db()
     @db.transactionnal
     def generate_urls():
         urls = []

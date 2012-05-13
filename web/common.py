@@ -16,7 +16,7 @@ PAGES_LIMIT = 5
 
 @web.route("/blog_list_<int:page>.html")
 def blog_list(page):
-    query = db.session.query(db.Article).filter(db.Article.type==db.ArticleType.by_key("blog_post"))
+    query = db.session.query(db.Article).filter(db.Article.published==True)
     articles_count = query.count()
     pages_count = max(articles_count / PAGES_LIMIT + (1 if articles_count % PAGES_LIMIT > 0 else 0), 1)
     offset = PAGES_LIMIT * page

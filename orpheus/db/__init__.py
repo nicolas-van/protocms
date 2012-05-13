@@ -7,9 +7,11 @@ from sqlalchemy import Column, Integer, String, Sequence, Boolean
 from sqlalchemy.orm import relationship
 import threading
 
+import config
+
 DEBUG = False
 
-engine = sqlalchemy.create_engine('sqlite:///database.sqlite', echo=DEBUG)
+engine = sqlalchemy.create_engine(config.db_connection_string, echo=DEBUG)
 
 # Some helpers to help use SqlAlchemy
 class Base(object):

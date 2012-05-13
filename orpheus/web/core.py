@@ -3,7 +3,12 @@ import orpheus.db as db
 import flask
 import os
 import os.path
+
+import config
+
 app = flask.Flask(__name__)
+app.template_folder = os.path.abspath(config.template_folder)
+app.static_folder = os.path.abspath(config.static_folder)
 app.debug = True
 
 static_pages_fcts = []

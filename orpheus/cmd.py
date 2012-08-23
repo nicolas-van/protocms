@@ -10,7 +10,7 @@ commands = {}
 
 def start():
     db.init_db()
-    web.app.run()
+    web.app.run(port=config.port)
 commands["start"] = start
 
 def generate():
